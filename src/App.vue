@@ -1,15 +1,30 @@
 <template>
 	<div>
-		<tawk-header></tawk-header>
+			<tawk-header @updateSearchInputValue="updateSearchInputValue"/>
+			<home :searchInputValue="searchInputValue"/>
 	</div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
+import Home from './components/MainBody/Home.vue';
+import clonedeep from 'lodash.clonedeep';
 
 export default {
-	components:{
-		'tawk-header': Header
+	name: "App",
+	components: {
+		'tawk-header': Header,
+		'home': Home
+	},
+	data () {
+		return {
+			searchInputValue: ""
+		}
+	},
+	methods: {
+		updateSearchInputValue (value) {
+			this.searchInputValue = clonedeep(value);
+		}
 	}
 }
 </script>
