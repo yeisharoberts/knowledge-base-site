@@ -22,6 +22,10 @@ export default {
 		}
 	},
 	methods: {
+    /** Function updateSearchInputValue
+     * Function to update searchInputValue data
+     * @param {string} value - search input value
+    **/
 		updateSearchInputValue (value) {
 			this.searchInputValue = clonedeep(value);
 		}

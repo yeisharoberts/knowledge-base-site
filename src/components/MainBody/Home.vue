@@ -99,7 +99,9 @@ export default {
     this.initCategoriesData();
   },
   methods: {
-    // Function to get list of categories
+    /** Funtion initCategoriesData
+     * Function to get list of categories
+    **/
     initCategoriesData () {
       makeGetRequest("categories")
         .then((reqResponse) => {
@@ -109,12 +111,21 @@ export default {
         })
         .catch(error => console.error("initCategoriesData", error));
     },
+    /** Function getLastUpdate
+     * Function to get last updated date in days format
+     * @param {string} dateUpdated - updated date
+     * @returns {string} new string 
+    **/
     getLastUpdate (dateUpdated) {
       const updatedDate = new Date(dateUpdated);
       const todayDate = new Date();
       return Math.floor((todayDate - updatedDate) / (1000 * 60 * 60 * 24));
     },
-    handleSearchCategories (searchValue) {
+    /** Function handleSearchItem
+     * Function to search list for item
+     * @param {string} searchValue - search input value
+    **/
+    handleSearchItem (searchValue) {
       const component = this.homeView ? 'categoriesData' : 'articlesData';
       const clonedComponent = this.homeView ? 'clonedCategoriesData' : 'clonedArticlesData';
       if (!searchValue) {
@@ -126,6 +137,10 @@ export default {
       );
       this[component] = filteredComponent.length ? filteredComponent : clonedeep(this[clonedComponent]);
     },
+    /** Function switchView
+     * Function to switch from Home to Category view 
+     * @param {any} category - category data
+    **/
     switchView (category) {
       this.selectedCategory = clonedeep(category);
       // Call API to get Articles
@@ -138,6 +153,10 @@ export default {
         })
         .catch(error => console.error("switchView", error));
     },
+    /** Function handleComponentVisibility
+     * Function to switch between component Home and Category
+     * @param {boolean} value - boolean value
+    **/
     handleComponentVisibility (value) {
       if (value) {
         this.selectedCategory = {};
@@ -145,11 +164,21 @@ export default {
       }
       this.homeView = value;
     },
+    /** Function getNumberOfWeeks
+     * Function to get Number of Weeks
+     * @param {string} updatedDate - date string
+     * @returns {string} new string 
+    **/
     getNumberOfWeeks (updatedDate) {
       const startDate = new Date(updatedDate);
       const todayDate = new Date();
       return Math.floor((todayDate - startDate) / (1000 * 60 * 60 * 24 * 7));
     },
+    /** Function getReadableStringDate
+     * Function get get date string in 'month, day year' format
+     * @param {string} dateString - date string
+     * @returns {string} new string 
+    **/
     getReadableStringDate (dateString) {
       const date = new Date(dateString);
       const month = date.toLocaleString('en-US', { month: 'short' });
@@ -160,7 +189,7 @@ export default {
   },
   watch: {
     searchInputValue (newValue) {
-      this.handleSearchCategories(newValue);
+      this.handleSearchItem(newValue);
     }
   }
 };

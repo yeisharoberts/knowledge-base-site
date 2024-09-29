@@ -22,6 +22,9 @@ export default {
 		}
 	},
 	methods: {
+    /** Function handleEmitSearchInputValue
+     * Function to emit search input value to parent component
+    **/
 		handleEmitSearchInputValue () {
 			this.$emit('updateSearchInputValue', this.searchInputValue);
 			this.searchInputValue = "";
