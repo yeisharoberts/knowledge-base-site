@@ -1,7 +1,7 @@
 <template>
   <div id="parent-home">
     <!-------------------- HOME VIEW -------------------->
-    <div class="generalStyling" id="child-home" v-if="homeView">
+    <div class="generalStyling" id="child-home" v-if="view === 'home'">
       <div class="container overflow-hidden text-center">
         <div class="d-flex justify-content-center row">
           <div class="col-xl-4 col-md-auto col-sm-auto" id="parent-container" v-for="category in categoriesData" :key="category.id" @click="switchView(category)" style="cursor: pointer;">
@@ -24,7 +24,8 @@
     </div>
 
     <!-------------------- CATEGORY VIEW -------------------->
-    <category :selectedCategory="selectedCategory" :articlesData="articlesData" @handleComponentVisibility="handleComponentVisibility" v-else />
+    <category :selectedCategory="selectedCategory" :articlesData="articlesData" @handleComponentVisibility="handleComponentVisibility" v-else-if="view === 'component'" />
+    <searchView v-if="view === 'search'" :searchData="searchData" :searchInputValue="searchInputValue" @handleComponentVisibility="handleComponentVisibility" />
   </div>
 </template>
 
@@ -32,6 +33,7 @@
 import clonedeep from "lodash.clonedeep";
 import { makeGetRequest } from "../../helpers/request";
 import Category from "./Category.vue";
+import SearchView from "./SearchView.vue";
 
 export default {
   name: "Home",
@@ -42,16 +44,19 @@ export default {
     }
   },
   components: {
-    Category
+    Category,
+    SearchView
   },
   data () {
     return {
       categoriesData: [],
       clonedCategoriesData: [],
-      homeView: true,
+      view: "home",
       selectedCategory: {},
       articlesData: [],
-      clonedArticlesData: []
+      clonedArticlesData: [],
+      // searchView: false,
+      searchData: []
     }
   },  
   created () {
@@ -84,18 +89,18 @@ export default {
      * Function to search list for item
      * @param {string} searchValue - search input value
     **/
-    handleSearchItem (searchValue) {
-      const component = this.homeView ? 'categoriesData' : 'articlesData';
-      const clonedComponent = this.homeView ? 'clonedCategoriesData' : 'clonedArticlesData';
-      if (!searchValue) {
-        this[component] = clonedeep(this[clonedComponent]);
-        return;
-      }
-      const filteredComponent = clonedeep(this[clonedComponent]).filter(component => 
-        component.title.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      this[component] = filteredComponent.length ? filteredComponent : clonedeep(this[clonedComponent]);
-    },
+    // handleSearchItem (searchValue) {
+    //   const component = this.homeView ? 'categoriesData' : 'articlesData';
+    //   const clonedComponent = this.homeView ? 'clonedCategoriesData' : 'clonedArticlesData';
+    //   if (!searchValue) {
+    //     this[component] = clonedeep(this[clonedComponent]);
+    //     return;
+    //   }
+    //   const filteredComponent = clonedeep(this[clonedComponent]).filter(component => 
+    //     component.title.toLowerCase().includes(searchValue.toLowerCase())
+    //   );
+    //   this[component] = filteredComponent.length ? filteredComponent : clonedeep(this[clonedComponent]);
+    // },
     /** Function switchView
      * Function to switch from Home to Category view 
      * @param {any} category - category data
@@ -108,7 +113,7 @@ export default {
           const resData = clonedeep(reqResponse.data);
           this.articlesData = resData.filter((article) => article.status === "published").sort((firstArticle, secondArticle) => firstArticle.order - secondArticle.order) || [];
           this.clonedArticlesData = clonedeep(this.articlesData);
-          this.handleComponentVisibility(false);
+          this.handleComponentVisibility("component");
         })
         .catch(error => console.error("switchView", error));
     },
@@ -116,17 +121,28 @@ export default {
      * Function to switch between component Home and Category
      * @param {boolean} value - boolean value
     **/
-    handleComponentVisibility (value) {
-      if (value) {
+    handleComponentVisibility (viewInput) {
+      if (viewInput === "home") {
         this.selectedCategory = {};
         this.categoriesData = clonedeep(this.clonedCategoriesData);
       }
-      this.homeView = value;
-    }
+      this.view = viewInput;
+    },
+    handleSearchItem () {
+      this.view = 'search';
+      // Init search results data
+      makeGetRequest(`search/${this.searchInputValue}`)
+        .then((response) => {
+          const resData = clonedeep(response.data);
+          this.searchData = resData.filter((res) => res.title.toLowerCase().includes(this.searchInputValue) && res.status === "published");
+          console.log(this.searchData);
+        })
+        .catch((error) => console.error("handleSearchItem", error));
+    }   
   },
   watch: {
-    searchInputValue (newValue) {
-      this.handleSearchItem(newValue);
+    searchInputValue () {
+      this.handleSearchItem(true);
     }
   }
 };

@@ -4,7 +4,7 @@
       <div>
         <nav class="breadcrumb-nav">
           <ol class="breadcrumb" style="font-size: 14px; margin: 0;">
-            <li class="breadcrumb-item"><div class="tc-green" @click="$emit('handleComponentVisibility', true)" style="cursor: pointer;">All Categories</div></li>
+            <li class="breadcrumb-item"><div class="tc-green" @click="$emit('handleComponentVisibility', 'home')" style="cursor: pointer;">All Categories</div></li>
             <li class="breadcrumb-item active tc-gray">{{ selectedCategory.title || "" }}</li>
           </ol>
         </nav>
