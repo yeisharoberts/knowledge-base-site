@@ -45,7 +45,6 @@
 </template>
 
 <script>
-imp
 export default {
   name: "SearchView",
   props: {
